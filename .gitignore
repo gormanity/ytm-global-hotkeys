@@ -1,0 +1,9 @@
+# Chrome extension local artifacts
+*.crx
+*.pem
+
+# Node / build artifacts
+node_modules/
+dist/
+build/
+out/
