@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "YTM Global Hotkeys",
+  "version": "0.1.0",
+  "description": "Global keyboard shortcuts for YouTube Music on macOS.",
+  "background": {
+    "service_worker": "dist/sw.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "permissions": ["storage"],
+  "commands": {
+    "play_pause": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Play/Pause"
+    }
+  }
+}

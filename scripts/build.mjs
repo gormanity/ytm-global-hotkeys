@@ -10,27 +10,27 @@ const common = {
     logLevel: "info",
 };
 
-const builds = [
-    esbuild.build({
+const buildOptions = [
+    {
         ...common,
         entryPoints: ["src/sw.ts"],
         outfile: "dist/sw.js",
-    }),
-    esbuild.build({
+    },
+    {
         ...common,
         entryPoints: ["popup/popup.ts"],
         outfile: "dist/popup.js",
-    }),
+    },
 ];
 
 if (watch) {
     await Promise.all(
-        builds.map(async (b) => {
-            const ctx = await esbuild.context(b.initialOptions);
+        buildOptions.map(async (options) => {
+            const ctx = await esbuild.context(options);
             await ctx.watch();
         })
     );
     console.log("esbuild watching…");
 } else {
-    await Promise.all(builds);
+    await Promise.all(buildOptions.map((options) => esbuild.build(options)));
 }
