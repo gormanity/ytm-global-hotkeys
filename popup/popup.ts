@@ -1,10 +1,12 @@
 type StorageShape = {
   lastCommand?: string;
   lastCommandAt?: string;
+  lastCommandError?: string | null;
 };
 
 const lastCommandEl = document.getElementById("last-command");
 const lastCommandAtEl = document.getElementById("last-command-at");
+const lastCommandErrorEl = document.getElementById("last-command-error");
 
 function formatRelativeTime(isoTimestamp?: string): string {
   if (!isoTimestamp) {
@@ -44,17 +46,21 @@ function formatRelativeTime(isoTimestamp?: string): string {
 }
 
 function renderStatus(data: StorageShape) {
-  if (!lastCommandEl || !lastCommandAtEl) {
+  if (!lastCommandEl || !lastCommandAtEl || !lastCommandErrorEl) {
     return;
   }
 
   lastCommandEl.textContent = data.lastCommand ?? "None";
   lastCommandAtEl.textContent = formatRelativeTime(data.lastCommandAt);
+  lastCommandErrorEl.textContent = data.lastCommandError ?? "None";
 }
 
-chrome.storage.sync.get(["lastCommand", "lastCommandAt"], (data) => {
-  renderStatus(data);
-});
+chrome.storage.sync.get(
+  ["lastCommand", "lastCommandAt", "lastCommandError"],
+  (data) => {
+    renderStatus(data);
+  }
+);
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName !== "sync") {
@@ -64,6 +70,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   const next: StorageShape = {
     lastCommand: changes.lastCommand?.newValue,
     lastCommandAt: changes.lastCommandAt?.newValue,
+    lastCommandError: changes.lastCommandError?.newValue,
   };
 
   renderStatus(next);
