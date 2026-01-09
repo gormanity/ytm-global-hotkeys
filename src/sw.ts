@@ -46,9 +46,11 @@ function executePlayPause(tabId: number): Promise<CommandResult> {
       {
         target: { tabId },
         func: () => {
-          const button = document.querySelector<HTMLButtonElement>(
-            'button[aria-label^="Play"], button[aria-label^="Pause"]'
-          );
+          const button =
+            document.querySelector<HTMLElement>("#play-pause-button") ??
+            document.querySelector<HTMLElement>(
+              'button[aria-label="Play"], button[aria-label="Pause"]'
+            );
           if (!button) {
             return { ok: false, reason: "no-button" };
           }
