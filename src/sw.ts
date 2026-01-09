@@ -77,15 +77,33 @@ function executeNextTrack(tabId: number): Promise<CommandResult> {
       {
         target: { tabId },
         func: () => {
-          const button =
+          const isVisible = (el: HTMLElement) => {
+            const rect = el.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          };
+
+          const primary =
             document.querySelector<HTMLElement>("#next-button") ??
-            document.querySelector<HTMLElement>(
-              'button[aria-label="Next song"], button[aria-label="Next track"]'
-            );
-          if (!button) {
+            document.querySelector<HTMLElement>("#mini-player #next-button");
+          if (primary && isVisible(primary)) {
+            primary.click();
+            return { ok: true };
+          }
+
+          const buttons = Array.from(
+            document.querySelectorAll<HTMLElement>(
+              'tp-yt-paper-icon-button[aria-label], button[aria-label]'
+            )
+          );
+          const match = buttons.find((button) => {
+            const label = button.getAttribute("aria-label") ?? "";
+            return label.toLowerCase().startsWith("next") && isVisible(button);
+          });
+
+          if (!match) {
             return { ok: false, reason: "no-button" };
           }
-          button.click();
+          match.click();
           return { ok: true };
         },
       },
@@ -108,15 +126,37 @@ function executePrevTrack(tabId: number): Promise<CommandResult> {
       {
         target: { tabId },
         func: () => {
-          const button =
+          const isVisible = (el: HTMLElement) => {
+            const rect = el.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          };
+
+          const primary =
             document.querySelector<HTMLElement>("#previous-button") ??
             document.querySelector<HTMLElement>(
-              'button[aria-label="Previous song"], button[aria-label="Previous track"]'
+              "#mini-player #previous-button"
             );
-          if (!button) {
+          if (primary && isVisible(primary)) {
+            primary.click();
+            return { ok: true };
+          }
+
+          const buttons = Array.from(
+            document.querySelectorAll<HTMLElement>(
+              'tp-yt-paper-icon-button[aria-label], button[aria-label]'
+            )
+          );
+          const match = buttons.find((button) => {
+            const label = button.getAttribute("aria-label") ?? "";
+            return (
+              label.toLowerCase().startsWith("previous") && isVisible(button)
+            );
+          });
+
+          if (!match) {
             return { ok: false, reason: "no-button" };
           }
-          button.click();
+          match.click();
           return { ok: true };
         },
       },
