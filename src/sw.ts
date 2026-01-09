@@ -406,13 +406,6 @@ chrome.commands.onCommand.addListener((command) => {
       if (candidate.id === undefined) {
         continue;
       }
-      logEvent("executing command", {
-        command,
-        tabId: candidate.id,
-        windowId: candidate.windowId,
-        active: candidate.active,
-        audible: candidate.audible,
-      });
       lastResult = await executeCommandWithRetry(candidate.id, command);
       if (lastResult.ok) {
         await storageSet({ lastCommandError: null });
