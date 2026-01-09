@@ -1,5 +1,8 @@
 const logPrefix = "[ytm-global-hotkeys]";
 const ytmUrlPattern = "https://music.youtube.com/*";
+const ytmUrl = "https://music.youtube.com/";
+const commandRetryAttempts = 6;
+const commandRetryDelayMs = 300;
 
 type CommandResult = {
   ok: boolean;
@@ -37,6 +40,43 @@ function queryYtmTabs(): Promise<chrome.tabs.Tab[]> {
       }
       resolve(tabs);
     });
+  });
+}
+
+function createYtmTab(): Promise<chrome.tabs.Tab | null> {
+  return new Promise((resolve) => {
+    chrome.tabs.create({ url: ytmUrl, active: false }, (tab) => {
+      const err = chrome.runtime.lastError;
+      if (err) {
+        logEvent("tab create failed", { message: err.message });
+        resolve(null);
+        return;
+      }
+      resolve(tab ?? null);
+    });
+  });
+}
+
+function focusTab(tab: chrome.tabs.Tab): Promise<void> {
+  return new Promise((resolve) => {
+    if (tab.windowId !== undefined) {
+      chrome.windows.update(tab.windowId, { focused: true }, () => {
+        chrome.tabs.update(tab.id ?? undefined, { active: true }, () => {
+          resolve();
+        });
+      });
+      return;
+    }
+
+    chrome.tabs.update(tab.id ?? undefined, { active: true }, () => {
+      resolve();
+    });
+  });
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
   });
 }
 
@@ -185,6 +225,37 @@ function pickMostRecentTab(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab | null {
   }, tabs[0]);
 }
 
+async function executeCommandWithRetry(
+  tabId: number,
+  command: string
+): Promise<CommandResult> {
+  let lastResult: CommandResult = { ok: false, reason: "unknown-command" };
+
+  for (let attempt = 0; attempt < commandRetryAttempts; attempt += 1) {
+    if (command === "play_pause") {
+      lastResult = await executePlayPause(tabId);
+    } else if (command === "next_track") {
+      lastResult = await executeNextTrack(tabId);
+    } else if (command === "prev_track") {
+      lastResult = await executePrevTrack(tabId);
+    } else {
+      return { ok: false, reason: "unknown-command" };
+    }
+
+    if (lastResult.ok) {
+      return lastResult;
+    }
+
+    if (lastResult.reason !== "no-button") {
+      return lastResult;
+    }
+
+    await sleep(commandRetryDelayMs);
+  }
+
+  return lastResult;
+}
+
 chrome.runtime.onInstalled.addListener(() => {
   logEvent("installed");
 });
@@ -205,24 +276,35 @@ chrome.commands.onCommand.addListener((command) => {
     });
 
     const tabs = await queryYtmTabs();
-    const tab = pickMostRecentTab(tabs);
+    let tab = pickMostRecentTab(tabs);
+
+    if (command === "focus_ytm") {
+      if (!tab) {
+        tab = await createYtmTab();
+      }
+
+      if (!tab) {
+        logEvent("focus failed", { reason: "no-tab" });
+        await storageSet({ lastCommandError: "no-tab" });
+        return;
+      }
+
+      await focusTab(tab);
+      await storageSet({ lastCommandError: null });
+      return;
+    }
+
     if (!tab || tab.id === undefined) {
-      logEvent("no YTM tab found");
+      logEvent("no YTM tab found, opening new tab");
+      tab = await createYtmTab();
+    }
+
+    if (!tab || tab.id === undefined) {
       await storageSet({ lastCommandError: "no-tab" });
       return;
     }
 
-    let result: CommandResult = { ok: false, reason: "unknown-command" };
-    if (command === "play_pause") {
-      result = await executePlayPause(tab.id);
-    } else if (command === "next_track") {
-      result = await executeNextTrack(tab.id);
-    } else if (command === "prev_track") {
-      result = await executePrevTrack(tab.id);
-    } else {
-      logEvent("unknown command", { command });
-    }
-
+    const result = await executeCommandWithRetry(tab.id, command);
     if (!result.ok) {
       logEvent("command failed", { reason: result.reason, command });
       await storageSet({ lastCommandError: result.reason ?? "unknown" });
