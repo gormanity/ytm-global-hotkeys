@@ -71,6 +71,68 @@ function executePlayPause(tabId: number): Promise<CommandResult> {
   });
 }
 
+function executeNextTrack(tabId: number): Promise<CommandResult> {
+  return new Promise((resolve) => {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId },
+        func: () => {
+          const button =
+            document.querySelector<HTMLElement>("#next-button") ??
+            document.querySelector<HTMLElement>(
+              'button[aria-label="Next song"], button[aria-label="Next track"]'
+            );
+          if (!button) {
+            return { ok: false, reason: "no-button" };
+          }
+          button.click();
+          return { ok: true };
+        },
+      },
+      (results) => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          resolve({ ok: false, reason: "script-error" });
+          return;
+        }
+        const first = results && results[0] && results[0].result;
+        resolve(first ?? { ok: false, reason: "no-result" });
+      }
+    );
+  });
+}
+
+function executePrevTrack(tabId: number): Promise<CommandResult> {
+  return new Promise((resolve) => {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId },
+        func: () => {
+          const button =
+            document.querySelector<HTMLElement>("#previous-button") ??
+            document.querySelector<HTMLElement>(
+              'button[aria-label="Previous song"], button[aria-label="Previous track"]'
+            );
+          if (!button) {
+            return { ok: false, reason: "no-button" };
+          }
+          button.click();
+          return { ok: true };
+        },
+      },
+      (results) => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          resolve({ ok: false, reason: "script-error" });
+          return;
+        }
+        const first = results && results[0] && results[0].result;
+        resolve(first ?? { ok: false, reason: "no-result" });
+      }
+    );
+  });
+}
+
 function pickMostRecentTab(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab | null {
   if (tabs.length === 0) {
     return null;
@@ -92,11 +154,6 @@ chrome.runtime.onStartup.addListener(() => {
 });
 
 chrome.commands.onCommand.addListener((command) => {
-  if (command !== "play_pause") {
-    logEvent("unknown command", { command });
-    return;
-  }
-
   const timestamp = new Date().toISOString();
   logEvent("command received", { command, timestamp });
 
@@ -115,9 +172,19 @@ chrome.commands.onCommand.addListener((command) => {
       return;
     }
 
-    const result = await executePlayPause(tab.id);
+    let result: CommandResult = { ok: false, reason: "unknown-command" };
+    if (command === "play_pause") {
+      result = await executePlayPause(tab.id);
+    } else if (command === "next_track") {
+      result = await executeNextTrack(tab.id);
+    } else if (command === "prev_track") {
+      result = await executePrevTrack(tab.id);
+    } else {
+      logEvent("unknown command", { command });
+    }
+
     if (!result.ok) {
-      logEvent("play/pause failed", { reason: result.reason });
+      logEvent("command failed", { reason: result.reason, command });
       await storageSet({ lastCommandError: result.reason ?? "unknown" });
       return;
     }

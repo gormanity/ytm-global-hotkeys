@@ -18,6 +18,20 @@
         "mac": "Command+Shift+P"
       },
       "description": "Play/Pause"
+    },
+    "next_track": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Right",
+        "mac": "Command+Shift+Right"
+      },
+      "description": "Next Track"
+    },
+    "prev_track": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Left",
+        "mac": "Command+Shift+Left"
+      },
+      "description": "Previous Track"
     }
   }
 }
