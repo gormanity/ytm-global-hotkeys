@@ -9,7 +9,8 @@
   "action": {
     "default_popup": "popup/popup.html"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "scripting", "tabs"],
+  "host_permissions": ["https://music.youtube.com/*"],
   "commands": {
     "play_pause": {
       "suggested_key": {
