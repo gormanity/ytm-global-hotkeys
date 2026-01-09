@@ -33,6 +33,8 @@ Chrome’s shortcuts UI.
 - play_pause
 - next_track
 - prev_track
+- focus_ytm
+  - Focus the most recently used YTM tab, opening one if none exists.
 
 ## Design Principles
 
@@ -48,6 +50,8 @@ From another app on macOS:
 - Press shortcut
 - YouTube Music responds within ~200ms
 - No Chrome window focus change unless explicitly configured
+- If no YTM tab exists, the extension opens one to handle the command
+- A dedicated focus shortcut brings the YTM tab to the foreground
 
 ## Known Constraints
 
