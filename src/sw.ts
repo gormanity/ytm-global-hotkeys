@@ -225,6 +225,33 @@ function pickMostRecentTab(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab | null {
   }, tabs[0]);
 }
 
+function rankCandidateTabs(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab[] {
+  const withIds = tabs.filter((tab) => tab.id !== undefined);
+  const byLastAccessed = [...withIds].sort((a, b) => {
+    const aAccessed = a.lastAccessed ?? 0;
+    const bAccessed = b.lastAccessed ?? 0;
+    return bAccessed - aAccessed;
+  });
+
+  const ordered = [
+    ...withIds.filter((tab) => tab.active),
+    ...withIds.filter((tab) => tab.audible),
+    ...byLastAccessed,
+  ];
+
+  const seen = new Set<number>();
+  const unique: chrome.tabs.Tab[] = [];
+  for (const tab of ordered) {
+    if (tab.id === undefined || seen.has(tab.id)) {
+      continue;
+    }
+    seen.add(tab.id);
+    unique.push(tab);
+  }
+
+  return unique;
+}
+
 async function executeCommandWithRetry(
   tabId: number,
   command: string
@@ -279,6 +306,8 @@ chrome.commands.onCommand.addListener((command) => {
     let tab = pickMostRecentTab(tabs);
 
     if (command === "focus_ytm") {
+      const candidates = rankCandidateTabs(tabs);
+      tab = candidates[0] ?? null;
       if (!tab) {
         tab = await createYtmTab();
       }
@@ -304,13 +333,34 @@ chrome.commands.onCommand.addListener((command) => {
       return;
     }
 
-    const result = await executeCommandWithRetry(tab.id, command);
-    if (!result.ok) {
-      logEvent("command failed", { reason: result.reason, command });
-      await storageSet({ lastCommandError: result.reason ?? "unknown" });
-      return;
+    const candidates = rankCandidateTabs(tabs.length > 0 ? tabs : [tab]);
+    let lastResult: CommandResult | null = null;
+
+    for (const candidate of candidates) {
+      if (candidate.id === undefined) {
+        continue;
+      }
+      logEvent("executing command", {
+        command,
+        tabId: candidate.id,
+        windowId: candidate.windowId,
+        active: candidate.active,
+        audible: candidate.audible,
+      });
+      lastResult = await executeCommandWithRetry(candidate.id, command);
+      if (lastResult.ok) {
+        await storageSet({ lastCommandError: null });
+        return;
+      }
+      if (lastResult.reason !== "no-button") {
+        break;
+      }
     }
 
-    await storageSet({ lastCommandError: null });
+    logEvent("command failed", {
+      reason: lastResult?.reason ?? "unknown",
+      command,
+    });
+    await storageSet({ lastCommandError: lastResult?.reason ?? "unknown" });
   })();
 });
