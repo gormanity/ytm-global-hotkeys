@@ -1,4 +1,5 @@
 import esbuild from "esbuild";
+import { watch } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import sharp from "sharp";
 
@@ -40,6 +41,12 @@ async function generateIcons() {
 
 if (watch) {
     await generateIcons();
+    const iconWatcher = watch("icons", { recursive: true }, (eventType, filename) => {
+        if (!filename || !filename.endsWith(".svg")) {
+            return;
+        }
+        void generateIcons();
+    });
     await Promise.all(
         buildOptions.map(async (options) => {
             const ctx = await esbuild.context(options);
@@ -47,6 +54,12 @@ if (watch) {
         })
     );
     console.log("esbuild watching…");
+    process.on("SIGINT", () => {
+        iconWatcher.close();
+    });
+    process.on("SIGTERM", () => {
+        iconWatcher.close();
+    });
 } else {
     await generateIcons();
     await Promise.all(buildOptions.map((options) => esbuild.build(options)));
