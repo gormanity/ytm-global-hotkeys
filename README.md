@@ -1,7 +1,8 @@
 # YTM Global Hotkeys
 
 Chrome Manifest V3 extension that provides global keyboard shortcuts for
-YouTube Music on macOS using Chrome's `commands` API. Chrome must be running.
+YouTube Music using Chrome's `commands` API. It is optimized for macOS and
+functionality may be degraded on other platforms. Chrome must be running.
 
 ## Commands
 
