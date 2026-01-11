@@ -1,19 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <!-- Transparent background by default -->
-
-  <!-- Bigger YTM red disc to fill the square -->
   <circle cx="64" cy="64" r="64" fill="#FF0033"/>
 
-  <!-- Thin inner white ring (scaled up proportionally) -->
-  <circle cx="64" cy="64" r="46" fill="none" stroke="#FFFFFF" stroke-width="7"/>
+  <!-- Slightly lighter ring so the ⌘ reads first -->
+  <circle cx="64" cy="64" r="46" fill="none" stroke="#FFFFFF" stroke-opacity="0.85" stroke-width="6"/>
 
-  <!-- Correct command symbol geometry (scaled up, centered, with breathing room) -->
-  <g transform="translate(26.8,26.8) scale(3.1)">
+  <!-- ⌘: slightly larger + thicker stroke for 16px legibility -->
+  <g transform="translate(25.6,25.6) scale(3.2)">
     <path
       d="M9.3 17.85C9.3 19.5897 7.8897 21 6.15 21C4.4103 21 3 19.5897 3 17.85C3 16.1103 4.4103 14.7 6.15 14.7H17.85C19.5897 14.7 21 16.1103 21 17.85C21 19.5897 19.5897 21 17.85 21C16.1103 21 14.7 19.5897 14.7 17.85V6.15C14.7 4.4103 16.1103 3 17.85 3C19.5897 3 21 4.4103 21 6.15C21 7.8897 19.5897 9.3 17.85 9.3H6.15C4.4103 9.3 3 7.8897 3 6.15C3 4.4103 4.4103 3 6.15 3C7.8897 3 9.3 4.4103 9.3 6.15V17.85Z"
       fill="none"
       stroke="#FFFFFF"
-      stroke-width="2"
+      stroke-width="3"
       stroke-linecap="round"
       stroke-linejoin="round"
     />

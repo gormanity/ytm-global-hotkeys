@@ -30,7 +30,7 @@ async function generateIcons() {
     await mkdir("dist/icons", { recursive: true });
     await Promise.all(
         sizes.map((size) =>
-            sharp("icons/icon.svg")
+            sharp(size === 16 ? "icons/icon-small-size.svg" : "icons/icon.svg")
                 .resize(size, size)
                 .png()
                 .toFile(`dist/icons/icon${size}.png`)
