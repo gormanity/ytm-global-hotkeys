@@ -7,6 +7,7 @@ type StorageShape = {
 const lastCommandEl = document.getElementById("last-command");
 const lastCommandAtEl = document.getElementById("last-command-at");
 const lastCommandErrorEl = document.getElementById("last-command-error");
+const shortcutsLinkEl = document.getElementById("shortcuts-link");
 
 function formatRelativeTime(isoTimestamp?: string): string {
   if (!isoTimestamp) {
@@ -53,6 +54,13 @@ function renderStatus(data: StorageShape) {
   lastCommandEl.textContent = data.lastCommand ?? "None";
   lastCommandAtEl.textContent = formatRelativeTime(data.lastCommandAt);
   lastCommandErrorEl.textContent = data.lastCommandError ?? "None";
+}
+
+if (shortcutsLinkEl) {
+  shortcutsLinkEl.addEventListener("click", (event) => {
+    event.preventDefault();
+    chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+  });
 }
 
 chrome.storage.sync.get(
