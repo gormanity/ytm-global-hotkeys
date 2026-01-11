@@ -6,10 +6,10 @@ functionality may be degraded on other platforms. Chrome must be running.
 
 ## Commands
 
-- `play_pause`
-- `next_track`
-- `prev_track`
-- `focus_ytm`
+- `play_pause` — toggle play/pause on the current track (default: Cmd+Shift+P)
+- `next_track` — skip to the next track in the queue (default: Cmd+Shift+Right)
+- `prev_track` — go back to the previous track (default: Cmd+Shift+Left)
+- `focus_ytm` — focus the most relevant YTM tab (or open one if missing) (default: Cmd+Shift+F)
 
 ## Setup
 
