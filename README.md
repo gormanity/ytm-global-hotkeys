@@ -24,7 +24,8 @@ extension targets:
 
 1. Run `npm run dev`.
 2. Load the extension as unpacked in `chrome://extensions`.
-3. Set the shortcuts to **Global** in `chrome://extensions/shortcuts`.
+3. Open `chrome://extensions/shortcuts`, assign shortcuts for each command, and
+   set them to **Global** so they work even when Chrome is unfocused.
 
 ## Development Notes
 
