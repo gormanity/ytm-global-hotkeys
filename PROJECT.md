@@ -42,6 +42,8 @@ Chrome’s shortcuts UI.
 - Prefer simple DOM interaction over abstractions
 - Fail loudly and visibly (store last error)
 - One YouTube Music tab is controlled at a time
+  - Target selection prefers active, then audible, then most recently accessed YTM tab
+  - If no YTM tab exists, open one and target it
 
 ## Success Criteria
 
