@@ -18,6 +18,15 @@ functionality may be degraded on other platforms. Chrome must be running.
 3. Open `chrome://extensions/shortcuts`, assign shortcuts for each command, and
    set them to **Global** so they work even when Chrome is unfocused.
 
+## Permissions
+
+- `tabs` — locate existing YouTube Music tabs and focus the most relevant one.
+- Chrome may show a "Read your browsing history" warning because of `tabs`,
+  even though the extension only queries `music.youtube.com` tabs.
+- `scripting` — inject the minimal play/pause/next/previous click handlers.
+- `storage` — persist the last command, timestamp, and error for the popup.
+- `https://music.youtube.com/*` — limit script injection to YouTube Music.
+
 ## Tab Selection Rules
 
 Only one YouTube Music tab is controlled at a time. When a command runs, the
