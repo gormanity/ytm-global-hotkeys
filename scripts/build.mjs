@@ -1,5 +1,5 @@
 import esbuild from "esbuild";
-import { watch } from "node:fs";
+import { watch as fsWatch } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import sharp from "sharp";
 
@@ -41,7 +41,7 @@ async function generateIcons() {
 
 if (watch) {
     await generateIcons();
-    const iconWatcher = watch("icons", { recursive: true }, (eventType, filename) => {
+    const iconWatcher = fsWatch("icons", { recursive: true }, (eventType, filename) => {
         if (!filename || !filename.endsWith(".svg")) {
             return;
         }
