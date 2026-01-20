@@ -31,7 +31,7 @@ async function generateIcons() {
     await mkdir("dist/icons", { recursive: true });
     await Promise.all(
         sizes.map((size) =>
-            sharp(size === 16 ? "icons/icon-small-size.svg" : "icons/icon.svg")
+            sharp(size === 16 ? "assets/icons/icon-small-size.svg" : "assets/icons/icon.svg")
                 .resize(size, size)
                 .png()
                 .toFile(`dist/icons/icon${size}.png`)
@@ -39,13 +39,33 @@ async function generateIcons() {
     );
 }
 
+async function generateStoreAssets() {
+    const assets = [
+        { src: "assets/store/small-promo-tile.svg", out: "dist/store/small-promo-tile.png", width: 440, height: 280 },
+        { src: "assets/store/marquee-promo-tile.svg", out: "dist/store/marquee-promo-tile.png", width: 1400, height: 560 },
+    ];
+    await mkdir("dist/store", { recursive: true });
+    await Promise.all(
+        assets.map(({ src, out, width, height }) =>
+            sharp(src).resize(width, height).png().toFile(out)
+        )
+    );
+}
+
 if (watch) {
     await generateIcons();
-    const iconWatcher = fsWatch("icons", { recursive: true }, (eventType, filename) => {
+    await generateStoreAssets();
+    const iconWatcher = fsWatch("assets/icons", { recursive: true }, (eventType, filename) => {
         if (!filename || !filename.endsWith(".svg")) {
             return;
         }
         void generateIcons();
+    });
+    const storeWatcher = fsWatch("assets/store", { recursive: true }, (eventType, filename) => {
+        if (!filename || !filename.endsWith(".svg")) {
+            return;
+        }
+        void generateStoreAssets();
     });
     await Promise.all(
         buildOptions.map(async (options) => {
@@ -56,11 +76,14 @@ if (watch) {
     console.log("esbuild watching…");
     process.on("SIGINT", () => {
         iconWatcher.close();
+        storeWatcher.close();
     });
     process.on("SIGTERM", () => {
         iconWatcher.close();
+        storeWatcher.close();
     });
 } else {
     await generateIcons();
+    await generateStoreAssets();
     await Promise.all(buildOptions.map((options) => esbuild.build(options)));
 }
