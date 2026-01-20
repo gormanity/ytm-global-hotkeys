@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280" role="img" aria-label="YouTube Music Global Hotkeys promo tile">
+  <defs>
+    <style>
+      .bg { fill: #F3EBDD; }
+      .title { fill: #141414; font: 600 34px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing: -0.5px; }
+      .subtitle { fill: #141414; font: 500 22px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; opacity: 0.88; letter-spacing: -0.2px; }
+
+      .keycap { fill: #2C2F33; }
+      .keyStroke { fill: none; stroke: rgba(255,255,255,0.10); stroke-width: 1; }
+
+      .keytxt { fill: #FFFFFF; font: 700 40px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+
+      .shadow { filter: url(#ds); }
+    </style>
+
+    <filter id="ds" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="440" height="280"/>
+
+  <!-- Key cluster -->
+  <g class="shadow" transform="translate(44,72)">
+    <!-- key 1 (icon inline, NO nested <svg>) -->
+    <rect class="keycap" x="0" y="0" width="92" height="92" rx="20"/>
+    <rect class="keyStroke" x="1.5" y="1.5" width="89" height="89" rx="19"/>
+
+    <!-- icon scaled to 64x64 and centered -->
+    <g transform="translate(14,14) scale(0.5)">
+      <circle cx="64" cy="64" r="64" fill="#FF0033"/>
+      <circle cx="64" cy="64" r="46" fill="none" stroke="#FFFFFF" stroke-width="7"/>
+      <g transform="translate(26.8,26.8) scale(3.1)">
+        <path
+          d="M9.3 17.85C9.3 19.5897 7.8897 21 6.15 21C4.4103 21 3 19.5897 3 17.85C3 16.1103 4.4103 14.7 6.15 14.7H17.85C19.5897 14.7 21 16.1103 21 17.85C21 19.5897 19.5897 21 17.85 21C16.1103 21 14.7 19.5897 14.7 17.85V6.15C14.7 4.4103 16.1103 3 17.85 3C19.5897 3 21 4.4103 21 6.15C21 7.8897 19.5897 9.3 17.85 9.3H6.15C4.4103 9.3 3 7.8897 3 6.15C3 4.4103 4.4103 3 6.15 3C7.8897 3 9.3 4.4103 9.3 6.15V17.85Z"
+          fill="none"
+          stroke="#FFFFFF"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+    </g>
+
+    <!-- key 2 -->
+    <rect class="keycap" x="112" y="0" width="92" height="92" rx="20"/>
+    <rect class="keyStroke" x="113.5" y="1.5" width="89" height="89" rx="19"/>
+    <text class="keytxt" x="158" y="58" text-anchor="middle">⇧</text>
+
+    <!-- key 3 -->
+    <rect class="keycap" x="224" y="0" width="92" height="92" rx="20"/>
+    <rect class="keyStroke" x="225.5" y="1.5" width="89" height="89" rx="19"/>
+    <path d="M262 32 L262 60 L287 46 Z" fill="#FFFFFF"/>
+  </g>
+
+  <text class="title" x="44" y="208">Global Hotkeys</text>
+  <text class="subtitle" x="44" y="240">for YouTube Music</text>
+</svg>
