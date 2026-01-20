@@ -31,6 +31,13 @@ h1 {
   color: var(--accent);
 }
 
+h2 {
+  margin: 10px 0 6px;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.4px;
+}
+
 .status {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -68,4 +75,35 @@ h1 {
 .mono {
   font-family: "Courier New", monospace;
   color: var(--accent);
+}
+
+.hotkeys {
+  margin-top: 8px;
+}
+
+.hotkeys-list {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.hotkey-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hotkey-name {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+.hotkey-shortcut {
+  font-size: 12px;
+  font-weight: 600;
 }

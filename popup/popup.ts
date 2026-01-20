@@ -8,6 +8,14 @@ const lastCommandEl = document.getElementById("last-command");
 const lastCommandAtEl = document.getElementById("last-command-at");
 const lastCommandErrorEl = document.getElementById("last-command-error");
 const shortcutsLinkEl = document.getElementById("shortcuts-link");
+const hotkeysListEl = document.getElementById("hotkeys-list");
+
+const commandLabels: Record<string, string> = {
+  play_pause: "Play/Pause",
+  next_track: "Next",
+  prev_track: "Previous",
+  focus_ytm: "Focus",
+};
 
 function formatRelativeTime(isoTimestamp?: string): string {
   if (!isoTimestamp) {
@@ -56,6 +64,53 @@ function renderStatus(data: StorageShape) {
   lastCommandErrorEl.textContent = data.lastCommandError ?? "None";
 }
 
+function formatShortcut(shortcut?: string) {
+  return shortcut && shortcut.trim().length > 0 ? shortcut : "Not set";
+}
+
+function renderHotkeys(commands: chrome.commands.Command[]) {
+  if (!hotkeysListEl) {
+    return;
+  }
+
+  hotkeysListEl.textContent = "";
+
+  const filtered = commands.filter(
+    (command) => command.name && command.name in commandLabels
+  );
+
+  for (const command of filtered) {
+    const row = document.createElement("div");
+    row.className = "hotkey-row";
+
+    const name = document.createElement("div");
+    name.className = "hotkey-name";
+    name.textContent = commandLabels[command.name] ?? command.name;
+
+    const shortcut = document.createElement("div");
+    shortcut.className = "hotkey-shortcut";
+    shortcut.textContent = formatShortcut(command.shortcut);
+
+    row.appendChild(name);
+    row.appendChild(shortcut);
+    hotkeysListEl.appendChild(row);
+  }
+}
+
+function loadCommands() {
+  if (!chrome.commands?.getAll) {
+    return;
+  }
+
+  chrome.commands.getAll((commands) => {
+    const err = chrome.runtime.lastError;
+    if (err) {
+      return;
+    }
+    renderHotkeys(commands);
+  });
+}
+
 if (shortcutsLinkEl) {
   shortcutsLinkEl.addEventListener("click", (event) => {
     event.preventDefault();
@@ -83,3 +138,5 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
   renderStatus(next);
 });
+
+loadCommands();
