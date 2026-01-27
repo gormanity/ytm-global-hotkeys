@@ -1,6 +1,6 @@
 import esbuild from "esbuild";
 import { watch as fsWatch } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { copyFile, mkdir } from "node:fs/promises";
 import sharp from "sharp";
 
 const watch = process.argv.includes("--watch");
@@ -21,10 +21,19 @@ const buildOptions = [
     },
     {
         ...common,
-        entryPoints: ["popup/popup.ts"],
-        outfile: "dist/popup.js",
+        entryPoints: ["src/popup/popup.ts"],
+        outfile: "dist/popup/popup.js",
     },
 ];
+
+async function copyStaticFiles() {
+    await mkdir("dist/popup", { recursive: true });
+    await Promise.all([
+        copyFile("src/manifest.json", "dist/manifest.json"),
+        copyFile("src/popup/popup.html", "dist/popup/popup.html"),
+        copyFile("src/popup/popup.css", "dist/popup/popup.css"),
+    ]);
+}
 
 async function generateIcons() {
     const sizes = [16, 32, 48, 128];
@@ -53,6 +62,7 @@ async function generateStoreAssets() {
 }
 
 if (watch) {
+    await copyStaticFiles();
     await generateIcons();
     await generateStoreAssets();
     const iconWatcher = fsWatch("assets/icons", { recursive: true }, (eventType, filename) => {
@@ -67,6 +77,12 @@ if (watch) {
         }
         void generateStoreAssets();
     });
+    const staticWatcher = fsWatch("src", { recursive: true }, (eventType, filename) => {
+        if (!filename || filename.endsWith(".ts")) {
+            return;
+        }
+        void copyStaticFiles();
+    });
     await Promise.all(
         buildOptions.map(async (options) => {
             const ctx = await esbuild.context(options);
@@ -77,12 +93,15 @@ if (watch) {
     process.on("SIGINT", () => {
         iconWatcher.close();
         storeWatcher.close();
+        staticWatcher.close();
     });
     process.on("SIGTERM", () => {
         iconWatcher.close();
         storeWatcher.close();
+        staticWatcher.close();
     });
 } else {
+    await copyStaticFiles();
     await generateIcons();
     await generateStoreAssets();
     await Promise.all(buildOptions.map((options) => esbuild.build(options)));

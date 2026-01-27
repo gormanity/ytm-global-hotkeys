@@ -32,10 +32,10 @@ OS-level hooks.
 
 ## TypeScript & Build Constraints
 
-- Source files are TypeScript; Chrome runs compiled JS from `dist/`
+- All extension source lives in `src/` (manifest, HTML, CSS, TypeScript)
+- The build produces a complete, loadable extension in `dist/`
 - Use esbuild for bundling; avoid adding additional build tools unless asked
 - Do not commit `dist/` output
-- Keep `popup.html` unbundled (it loads `dist/popup.js`)
 
 ## Editing Rules
 
