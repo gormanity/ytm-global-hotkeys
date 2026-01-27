@@ -1,8 +1,14 @@
-# YTM Global Hotkeys
+# <img src="assets/icons/icon.svg" width="32" alt="icon">&nbsp; YTM Global Hotkeys
 
 Chrome Manifest V3 extension that provides global keyboard shortcuts for
 YouTube Music using Chrome's `commands` API. It is optimized for macOS and
 functionality may be degraded on other platforms. Chrome must be running.
+
+<p align="center">
+  <img src="assets/store/screenshot-1.png" width="400" alt="YouTube Music with global hotkeys">
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/store/screenshot-2.png" width="400" alt="Extension popup">
+</p>
 
 ## Commands
 
@@ -39,6 +45,6 @@ extension targets:
 
 ## Development Notes
 
-- Source is TypeScript in `src/` and `popup/`.
-- Build output goes to `dist/` (generated, not committed).
-- `popup/popup.html` loads `dist/popup.js` directly.
+- Source is TypeScript in `src/`.
+- Build output goes to `dist/` (complete loadable extension, not committed).
+- Run `npm run build` to build, or `npm run dev` to watch for changes.
