@@ -117,66 +117,13 @@ function executeNextTrack(tabId: number): Promise<CommandResult> {
       {
         target: { tabId },
         func: () => {
-          const isVisible = (el: HTMLElement) => {
-            const rect = el.getBoundingClientRect();
-            return rect.width > 0 && rect.height > 0;
-          };
-
-          const getShadowButton = (selectors: string[]) => {
-            const hosts = Array.from(
-              document.querySelectorAll<HTMLElement>(
-                "ytmusic-player-bar, ytmusic-mini-player-bar"
-              )
-            );
-            for (const host of hosts) {
-              const root = (host as HTMLElement & { shadowRoot?: ShadowRoot })
-                .shadowRoot;
-              if (!root) {
-                continue;
-              }
-              for (const selector of selectors) {
-                const button = root.querySelector<HTMLElement>(selector);
-                if (button) {
-                  return button;
-                }
-              }
-            }
-            return null;
-          };
-
-          const primary =
-            document.querySelector<HTMLElement>("#next-button") ??
-            document.querySelector<HTMLElement>("#mini-player #next-button");
-          if (primary && isVisible(primary)) {
-            primary.click();
-            return { ok: true };
-          }
-
-          const shadowButton = getShadowButton([
-            "#next-button",
-            'button[aria-label="Next song"]',
-            'button[aria-label="Next track"]',
-            'tp-yt-paper-icon-button[aria-label^="Next"]',
-          ]);
-          if (shadowButton && isVisible(shadowButton)) {
-            shadowButton.click();
-            return { ok: true };
-          }
-
-          const buttons = Array.from(
-            document.querySelectorAll<HTMLElement>(
-              'tp-yt-paper-icon-button[aria-label], button[aria-label]'
-            )
+          const button = document.querySelector<HTMLElement>(
+            "ytmusic-player-bar .next-button"
           );
-          const match = buttons.find((button) => {
-            const label = button.getAttribute("aria-label") ?? "";
-            return label.toLowerCase().startsWith("next") && isVisible(button);
-          });
-
-          if (!match) {
+          if (!button) {
             return { ok: false, reason: "no-button" };
           }
-          match.click();
+          button.click();
           return { ok: true };
         },
       },
@@ -199,70 +146,13 @@ function executePrevTrack(tabId: number): Promise<CommandResult> {
       {
         target: { tabId },
         func: () => {
-          const isVisible = (el: HTMLElement) => {
-            const rect = el.getBoundingClientRect();
-            return rect.width > 0 && rect.height > 0;
-          };
-
-          const getShadowButton = (selectors: string[]) => {
-            const hosts = Array.from(
-              document.querySelectorAll<HTMLElement>(
-                "ytmusic-player-bar, ytmusic-mini-player-bar"
-              )
-            );
-            for (const host of hosts) {
-              const root = (host as HTMLElement & { shadowRoot?: ShadowRoot })
-                .shadowRoot;
-              if (!root) {
-                continue;
-              }
-              for (const selector of selectors) {
-                const button = root.querySelector<HTMLElement>(selector);
-                if (button) {
-                  return button;
-                }
-              }
-            }
-            return null;
-          };
-
-          const primary =
-            document.querySelector<HTMLElement>("#previous-button") ??
-            document.querySelector<HTMLElement>(
-              "#mini-player #previous-button"
-            );
-          if (primary && isVisible(primary)) {
-            primary.click();
-            return { ok: true };
-          }
-
-          const shadowButton = getShadowButton([
-            "#previous-button",
-            'button[aria-label="Previous song"]',
-            'button[aria-label="Previous track"]',
-            'tp-yt-paper-icon-button[aria-label^="Previous"]',
-          ]);
-          if (shadowButton && isVisible(shadowButton)) {
-            shadowButton.click();
-            return { ok: true };
-          }
-
-          const buttons = Array.from(
-            document.querySelectorAll<HTMLElement>(
-              'tp-yt-paper-icon-button[aria-label], button[aria-label]'
-            )
+          const button = document.querySelector<HTMLElement>(
+            "ytmusic-player-bar .previous-button"
           );
-          const match = buttons.find((button) => {
-            const label = button.getAttribute("aria-label") ?? "";
-            return (
-              label.toLowerCase().startsWith("previous") && isVisible(button)
-            );
-          });
-
-          if (!match) {
+          if (!button) {
             return { ok: false, reason: "no-button" };
           }
-          match.click();
+          button.click();
           return { ok: true };
         },
       },

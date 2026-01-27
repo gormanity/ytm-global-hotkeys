@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YTM Global Hotkeys",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Global keyboard shortcuts for YouTube Music on macOS.",
   "background": {
     "service_worker": "sw.js"
